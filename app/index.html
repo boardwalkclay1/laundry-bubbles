@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>Laundry Bubbles</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
-    <!-- Top nav -->
     <header class="lb-header">
       <div class="lb-logo-bubble">
         <span class="lb-logo-main">Laundry</span>
@@ -17,6 +16,7 @@
       <nav class="lb-nav">
         <button class="lb-nav-btn" data-nav="home">Home</button>
         <button class="lb-nav-btn" data-nav="dashboard">Dashboard</button>
+        <button class="lb-nav-btn" data-nav="map">Map</button>
         <button class="lb-nav-btn" data-nav="payments">Payments</button>
         <button class="lb-nav-btn" data-nav="settings">Settings</button>
         <button class="lb-nav-btn" data-nav="profile">Profile</button>
@@ -25,7 +25,7 @@
 
     <main class="lb-main">
 
-      <!-- HOME: profile + role -->
+      <!-- HOME -->
       <section class="lb-screen" id="screen-home">
         <div class="lb-hero-bubbles">
           <div class="lb-hero-bubble big"></div>
@@ -34,24 +34,17 @@
         </div>
         <div class="lb-card lb-hero-card">
           <h1>Welcome to Laundry Bubbles</h1>
-          <p class="lb-tagline">
-            70s suds, cosmic bubbles, and clean clothes on demand.
-          </p>
+          <p class="lb-tagline">70s suds, cosmic bubbles, and clean clothes on demand.</p>
 
           <div id="auth-section">
             <h2>Step 1 · Create your profile</h2>
             <div class="lb-form">
-              <label>
-                <span>Name</span>
-                <input type="text" id="input-name" placeholder="Your full name" />
-              </label>
-              <label>
-                <span>Email</span>
-                <input type="email" id="input-email" placeholder="you@example.com" />
-              </label>
-              <label>
-                <span>Phone</span>
-                <input type="tel" id="input-phone" placeholder="+1 555 123 4567" />
+              <label><span>Name</span><input id="input-name" type="text" placeholder="Your full name" /></label>
+              <label><span>Email</span><input id="input-email" type="email" placeholder="you@example.com" /></label>
+              <label><span>Phone</span><input id="input-phone" type="tel" placeholder="+1 555 123 4567" /></label>
+              <label><span>Profile photo</span>
+                <input id="input-profile-photo" type="file" accept="image/*" />
+                <div id="profile-photo-preview" class="lb-photo-preview lb-hidden"></div>
               </label>
               <button id="btn-save-profile" class="lb-primary">Save profile</button>
             </div>
@@ -60,12 +53,8 @@
               <h2>Step 2 · Choose your side</h2>
               <p class="lb-muted">You can switch roles later in Profile.</p>
               <div class="lb-role-buttons">
-                <button class="lb-role-btn" data-role="client">
-                  I need laundry done
-                </button>
-                <button class="lb-role-btn" data-role="washer">
-                  I wash for clients
-                </button>
+                <button class="lb-role-btn" data-role="client">I need laundry done</button>
+                <button class="lb-role-btn" data-role="washer">I wash for clients</button>
               </div>
             </div>
           </div>
@@ -78,28 +67,18 @@
           <h1 id="dashboard-title">Dashboard</h1>
           <p id="dashboard-subtitle" class="lb-muted"></p>
 
-          <!-- CLIENT DASHBOARD -->
+          <!-- CLIENT -->
           <div id="client-dashboard" class="lb-dashboard lb-hidden">
-            <h2>Client map & jobs</h2>
-
+            <h2>Find a washer</h2>
             <div class="lb-card-sub">
-              <h3>Find a washer</h3>
-              <div class="lb-map-panel">
-                <div class="lb-map-header">
-                  <button id="btn-client-refresh-location" class="lb-secondary">
-                    Update my location
-                  </button>
-                  <button id="btn-client-refresh-washers" class="lb-secondary">
-                    Refresh active washers
-                  </button>
-                  <button id="btn-client-open-map" class="lb-secondary">
-                    Open full map
-                  </button>
-                </div>
-                <div id="map-client" class="lb-map-placeholder">
-                  <p>Bubble Map · Active washers near you</p>
-                  <ul id="client-washer-list" class="lb-list"></ul>
-                </div>
+              <div class="lb-map-header">
+                <button id="btn-client-refresh-location" class="lb-secondary">Update my location</button>
+                <button id="btn-client-refresh-washers" class="lb-secondary">Refresh washers</button>
+                <button id="btn-client-open-map" class="lb-secondary">Open map</button>
+              </div>
+              <div id="map-client" class="lb-map-placeholder">
+                <p>Active washers near you</p>
+                <ul id="client-washer-list" class="lb-list"></ul>
               </div>
             </div>
 
@@ -109,8 +88,7 @@
 
               <h4>Create a pickup / drop off</h4>
               <form id="client-job-form" class="lb-form">
-                <label>
-                  <span>Service type</span>
+                <label><span>Service type</span>
                   <select id="client-service-type">
                     <option value="wash">Wash</option>
                     <option value="wash_fold">Wash &amp; Fold</option>
@@ -120,28 +98,25 @@
                     <option value="other">Other</option>
                   </select>
                 </label>
-                <label>
-                  <span>Description</span>
-                  <textarea id="client-job-notes" placeholder="Brief notes for the washer"></textarea>
+                <label><span>Description</span><textarea id="client-job-notes" placeholder="Notes for the washer"></textarea></label>
+                <label><span>Estimated weight (lbs)</span><input id="client-job-weight" type="number" min="1" value="10" /></label>
+                <label><span>Pickup / delivery</span>
+                  <select id="client-job-pickup"><option value="yes">Yes</option><option value="no">No</option></select>
                 </label>
-                <label>
-                  <span>Estimated weight (lbs)</span>
-                  <input type="number" id="client-job-weight" min="1" value="10" />
-                </label>
-                <label>
-                  <span>Use pickup / delivery</span>
-                  <select id="client-job-pickup">
-                    <option value="yes">Yes · pickup / drop off</option>
-                    <option value="no">No · I’ll handle drop off</option>
-                  </select>
-                </label>
-                <button type="button" id="btn-job-calc" class="lb-secondary">
-                  Calculate total
-                </button>
+                <label><span>Tip (optional)</span><input id="client-job-tip" type="number" min="0" step="0.5" value="0" /></label>
+
+                <div class="lb-form">
+                  <label><span>Attach photos (optional)</span>
+                    <input id="client-job-photos" type="file" accept="image/*" multiple />
+                  </label>
+                  <label><span>Attach short video (optional)</span>
+                    <input id="client-job-video" type="file" accept="video/*" />
+                  </label>
+                </div>
+
+                <button type="button" id="btn-job-calc" class="lb-secondary">Calculate total</button>
                 <div id="client-job-total" class="lb-job-total lb-muted"></div>
-                <button type="submit" class="lb-primary">
-                  Pay &amp; request pickup / drop off
-                </button>
+                <button type="submit" class="lb-primary">Pay &amp; request pickup</button>
               </form>
             </div>
 
@@ -151,70 +126,46 @@
             </div>
           </div>
 
-          <!-- WASHER DASHBOARD -->
+          <!-- WASHER -->
           <div id="washer-dashboard" class="lb-dashboard lb-hidden">
             <h2>Washer control center</h2>
 
             <div class="lb-form lb-card-sub">
               <h3>Washer status</h3>
-              <label class="lb-switch">
-                <input type="checkbox" id="washer-active-toggle" />
-                <span>Active · show me on the map</span>
-              </label>
-              <label>
-                <span>Display name</span>
-                <input type="text" id="washer-display-name" placeholder="Your washer name" />
-              </label>
-              <label>
-                <span>My location (approx)</span>
-                <button type="button" id="btn-washer-use-location" class="lb-secondary">
-                  Use my current location
-                </button>
-              </label>
+              <label class="lb-switch"><input id="washer-active-toggle" type="checkbox" /><span>Active · show me on the map</span></label>
+              <label><span>Display name</span><input id="washer-display-name" type="text" placeholder="Your washer name" /></label>
+              <label><span>Profile photo</span><input id="washer-profile-photo" type="file" accept="image/*" /></label>
+              <div id="washer-photo-preview" class="lb-photo-preview lb-hidden"></div>
+              <label><span>My location (approx)</span><button id="btn-washer-use-location" class="lb-secondary">Use my current location</button></label>
               <p id="washer-location-display" class="lb-muted"></p>
             </div>
 
             <div class="lb-form lb-card-sub">
               <h3>Pricing &amp; services</h3>
               <div class="lb-grid-2">
-                <label>
-                  <span>Wash (per lb)</span>
-                  <input type="number" id="washer-price-wash" min="0" step="0.25" />
-                </label>
-                <label>
-                  <span>Wash &amp; fold (per lb)</span>
-                  <input type="number" id="washer-price-fold" min="0" step="0.25" />
-                </label>
-                <label>
-                  <span>Wash, fold &amp; iron (per lb)</span>
-                  <input type="number" id="washer-price-iron" min="0" step="0.25" />
-                </label>
-                <label>
-                  <span>Pickup / delivery (flat)</span>
-                  <input type="number" id="washer-price-pickup" min="0" step="0.50" />
-                </label>
-                <label>
-                  <span>Shoes (per pair)</span>
-                  <input type="number" id="washer-price-shoes" min="0" step="0.50" />
-                </label>
-                <label>
-                  <span>Sewing / repair (per item)</span>
-                  <input type="number" id="washer-price-sewing" min="0" step="0.50" />
-                </label>
-                <label>
-                  <span>Other (custom)</span>
-                  <input type="number" id="washer-price-other" min="0" step="0.50" />
-                </label>
+                <label><span>Wash (per lb)</span><input id="washer-price-wash" type="number" min="0" step="0.25" /></label>
+                <label><span>Wash &amp; fold (per lb)</span><input id="washer-price-fold" type="number" min="0" step="0.25" /></label>
+                <label><span>Wash, fold &amp; iron (per lb)</span><input id="washer-price-iron" type="number" min="0" step="0.25" /></label>
+                <label><span>Pickup / delivery (flat)</span><input id="washer-price-pickup" type="number" min="0" step="0.5" /></label>
+                <label><span>Shoes (per pair)</span><input id="washer-price-shoes" type="number" min="0" step="0.5" /></label>
+                <label><span>Sewing / repair (per item)</span><input id="washer-price-sewing" type="number" min="0" step="0.5" /></label>
+                <label><span>Other (custom)</span><input id="washer-price-other" type="number" min="0" step="0.5" /></label>
               </div>
-              <button id="btn-save-washer-profile" class="lb-primary">
-                Save washer profile
-              </button>
+              <button id="btn-save-washer-profile" class="lb-primary">Save washer profile</button>
+            </div>
+
+            <div class="lb-form lb-card-sub">
+              <h3>Gallery (show your work)</h3>
+              <p class="lb-muted">Upload photos or short videos of your work. Clients will see these on your profile.</p>
+              <label><span>Upload photos</span><input id="washer-gallery-photos" type="file" accept="image/*" multiple /></label>
+              <label><span>Upload short video</span><input id="washer-gallery-video" type="file" accept="video/*" /></label>
+              <div id="washer-gallery-preview" class="lb-gallery-preview"></div>
+              <button id="btn-save-washer-gallery" class="lb-secondary">Save gallery</button>
             </div>
 
             <div class="lb-form lb-card-sub">
               <h3>Payout settings</h3>
-              <label>
-                <span>Payout method</span>
+              <label><span>Payout method</span>
                 <select id="washer-payout-method">
                   <option value="none">Select</option>
                   <option value="paypal">PayPal</option>
@@ -223,13 +174,8 @@
                   <option value="bank">Bank transfer</option>
                 </select>
               </label>
-              <label>
-                <span>Payout handle / details</span>
-                <input type="text" id="washer-payout-handle" placeholder="@myhandle or account" />
-              </label>
-              <button id="btn-save-washer-payout" class="lb-secondary">
-                Save payout settings
-              </button>
+              <label><span>Payout handle / details</span><input id="washer-payout-handle" type="text" placeholder="@handle or account" /></label>
+              <button id="btn-save-washer-payout" class="lb-secondary">Save payout settings</button>
             </div>
 
             <div class="lb-card-sub">
@@ -240,43 +186,43 @@
         </div>
       </section>
 
-      <!-- PAYMENTS SCREEN -->
+      <!-- MAP (full) -->
+      <section class="lb-screen lb-hidden" id="screen-map">
+        <div class="lb-card">
+          <h1>Map</h1>
+          <p class="lb-muted">Real map powered by Google Maps. Insert your API key in app.js where indicated.</p>
+          <div id="map-canvas" style="height:420px;border-radius:16px;overflow:hidden;"></div>
+          <div class="lb-card-sub">
+            <button id="btn-map-back" class="lb-secondary">Back</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAYMENTS -->
       <section class="lb-screen lb-hidden" id="screen-payments">
         <div class="lb-card">
           <h1>Payments</h1>
-          <p class="lb-muted">
-            All payments are simulated locally. Client pays before pickup, 7% goes to Laundry Bubbles,
-            and the rest is released to the washer when the job is completed.
-          </p>
+          <p class="lb-muted">Set up real payment methods or use the local simulated escrow for testing.</p>
 
           <div class="lb-card-sub">
             <h3>Client payment options</h3>
             <div class="lb-form">
-              <label>
-                <span>Preferred payment method</span>
+              <label><span>Preferred payment method</span>
                 <select id="client-payment-method">
                   <option value="none">Select</option>
                   <option value="paypal">PayPal</option>
-                  <option value="cashapp">Cash App</option>
                   <option value="venmo">Venmo</option>
-                  <option value="card">Saved card (nickname only)</option>
+                  <option value="cashapp">Cash App</option>
+                  <option value="card">Card (nickname)</option>
                 </select>
               </label>
-              <label>
-                <span>Payment handle / nickname</span>
-                <input type="text" id="client-payment-handle" placeholder="@handle or card nickname" />
-              </label>
-              <button id="btn-save-client-payment" class="lb-primary">
-                Save client payment setup
-              </button>
+              <label><span>Payment handle / nickname</span><input id="client-payment-handle" type="text" placeholder="@handle or card nickname" /></label>
+              <button id="btn-save-client-payment" class="lb-primary">Save client payment setup</button>
             </div>
           </div>
 
           <div class="lb-card-sub">
             <h3>Escrow overview (local simulation)</h3>
-            <p class="lb-muted">
-              These amounts live only on this device. In production you would map these to a real payment provider.
-            </p>
             <ul id="escrow-summary" class="lb-list"></ul>
           </div>
         </div>
@@ -287,25 +233,14 @@
         <div class="lb-card">
           <h1>Profile</h1>
           <div class="lb-form">
-            <label>
-              <span>Name</span>
-              <input type="text" id="profile-name" />
+            <label><span>Name</span><input id="profile-name" type="text" /></label>
+            <label><span>Email</span><input id="profile-email" type="email" /></label>
+            <label><span>Phone</span><input id="profile-phone" type="tel" /></label>
+            <label><span>Role</span>
+              <select id="profile-role"><option value="client">Client</option><option value="washer">Washer</option></select>
             </label>
-            <label>
-              <span>Email</span>
-              <input type="email" id="profile-email" />
-            </label>
-            <label>
-              <span>Phone</span>
-              <input type="tel" id="profile-phone" />
-            </label>
-            <label>
-              <span>Current role</span>
-              <select id="profile-role">
-                <option value="client">Client</option>
-                <option value="washer">Washer</option>
-              </select>
-            </label>
+            <label><span>Profile photo</span><input id="profile-photo" type="file" accept="image/*" /></label>
+            <div id="profile-photo-preview" class="lb-photo-preview lb-hidden"></div>
             <button id="btn-profile-save" class="lb-primary">Save profile</button>
           </div>
         </div>
@@ -315,52 +250,28 @@
       <section class="lb-screen lb-hidden" id="screen-settings">
         <div class="lb-card">
           <h1>Settings</h1>
-
           <div class="lb-card-sub">
             <h3>Theme</h3>
-            <p class="lb-muted">
-              Blue, purple, and white 70s bubbles are locked in. All screens share the same cosmic style.
-            </p>
+            <p class="lb-muted">Blue, purple, and white 70s bubbles are locked in.</p>
           </div>
 
           <div class="lb-card-sub">
-            <h3>Payment system</h3>
-            <p class="lb-muted">
-              Payments use a non‑Stripe, local escrow model. Swap this logic for your real provider later.
-            </p>
+            <h3>Integrations</h3>
+            <p class="lb-muted">Add your Google Maps API key and optional cloud upload endpoint here.</p>
+            <label><span>Google Maps API key</span><input id="settings-google-key" type="text" placeholder="YOUR_GOOGLE_MAPS_API_KEY" /></label>
+            <label><span>Optional cloud upload endpoint (POST)</span><input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" /></label>
+            <button id="btn-save-settings" class="lb-primary">Save settings</button>
           </div>
 
           <div class="lb-card-sub">
             <h3>Data</h3>
-            <button id="btn-clear-data" class="lb-danger">
-              Clear all local data
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- FULL MAP SCREEN -->
-      <section class="lb-screen lb-hidden" id="screen-map">
-        <div class="lb-card">
-          <h1>Map</h1>
-          <p class="lb-muted">
-            This is a bubble‑styled mock map. Client and active washer are placed in relation to each other on this device.
-          </p>
-          <div class="lb-map-placeholder" id="map-full">
-            <p>Bubble Map · Client & washer positions</p>
-            <div id="map-full-client" class="lb-muted"></div>
-            <div id="map-full-washer" class="lb-muted" style="margin-top:6px;"></div>
-            <div id="map-full-distance" class="lb-muted" style="margin-top:6px;"></div>
-          </div>
-          <div class="lb-card-sub">
-            <button id="btn-map-back" class="lb-secondary">Back to dashboard</button>
+            <button id="btn-clear-data" class="lb-danger">Clear all local data</button>
           </div>
         </div>
       </section>
 
     </main>
 
-    <!-- Toast / notifications -->
     <div id="toast-container"></div>
   </div>
 
