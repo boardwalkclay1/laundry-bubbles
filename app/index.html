@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Laundry Bubbles</title>
+  <title>Laundry Bubbles — Real</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -17,6 +17,7 @@
         <button class="lb-nav-btn" data-nav="home">Home</button>
         <button class="lb-nav-btn" data-nav="dashboard">Dashboard</button>
         <button class="lb-nav-btn" data-nav="map">Map</button>
+        <button class="lb-nav-btn" data-nav="messages">Messages</button>
         <button class="lb-nav-btn" data-nav="payments">Payments</button>
         <button class="lb-nav-btn" data-nav="settings">Settings</button>
         <button class="lb-nav-btn" data-nav="profile">Profile</button>
@@ -27,17 +28,12 @@
 
       <!-- HOME -->
       <section class="lb-screen" id="screen-home">
-        <div class="lb-hero-bubbles">
-          <div class="lb-hero-bubble big"></div>
-          <div class="lb-hero-bubble medium"></div>
-          <div class="lb-hero-bubble small"></div>
-        </div>
         <div class="lb-card lb-hero-card">
           <h1>Welcome to Laundry Bubbles</h1>
-          <p class="lb-tagline">70s suds, cosmic bubbles, and clean clothes on demand.</p>
+          <p class="lb-tagline">70s suds, real-time pickups, and secure payments.</p>
 
           <div id="auth-section">
-            <h2>Step 1 · Create your profile</h2>
+            <h2>Create your profile</h2>
             <div class="lb-form">
               <label><span>Name</span><input id="input-name" type="text" placeholder="Your full name" /></label>
               <label><span>Email</span><input id="input-email" type="email" placeholder="you@example.com" /></label>
@@ -50,11 +46,10 @@
             </div>
 
             <div id="role-section" class="lb-role-section lb-hidden">
-              <h2>Step 2 · Choose your side</h2>
-              <p class="lb-muted">You can switch roles later in Profile.</p>
+              <h2>Choose role</h2>
               <div class="lb-role-buttons">
-                <button class="lb-role-btn" data-role="client">I need laundry done</button>
-                <button class="lb-role-btn" data-role="washer">I wash for clients</button>
+                <button class="lb-role-btn" data-role="client">Client</button>
+                <button class="lb-role-btn" data-role="washer">Washer</button>
               </div>
             </div>
           </div>
@@ -67,7 +62,6 @@
           <h1 id="dashboard-title">Dashboard</h1>
           <p id="dashboard-subtitle" class="lb-muted"></p>
 
-          <!-- CLIENT -->
           <div id="client-dashboard" class="lb-dashboard lb-hidden">
             <h2>Find a washer</h2>
             <div class="lb-card-sub">
@@ -77,7 +71,7 @@
                 <button id="btn-client-open-map" class="lb-secondary">Open map</button>
               </div>
               <div id="map-client" class="lb-map-placeholder">
-                <p>Active washers near you</p>
+                <p>Active washers & nearby POIs</p>
                 <ul id="client-washer-list" class="lb-list"></ul>
               </div>
             </div>
@@ -86,13 +80,13 @@
               <h3>Washer profile</h3>
               <div id="client-washer-profile"></div>
 
-              <h4>Create a pickup / drop off</h4>
+              <h4>Create pickup / drop off</h4>
               <form id="client-job-form" class="lb-form">
                 <label><span>Service type</span>
                   <select id="client-service-type">
                     <option value="wash">Wash</option>
-                    <option value="wash_fold">Wash &amp; Fold</option>
-                    <option value="wash_fold_iron">Wash, Fold &amp; Iron</option>
+                    <option value="wash_fold">Wash & Fold</option>
+                    <option value="wash_fold_iron">Wash, Fold & Iron</option>
                     <option value="shoes">Shoes</option>
                     <option value="sewing">Sewing / Repair</option>
                     <option value="other">Other</option>
@@ -116,7 +110,7 @@
 
                 <button type="button" id="btn-job-calc" class="lb-secondary">Calculate total</button>
                 <div id="client-job-total" class="lb-job-total lb-muted"></div>
-                <button type="submit" class="lb-primary">Pay &amp; request pickup</button>
+                <button type="submit" class="lb-primary">Pay & request pickup</button>
               </form>
             </div>
 
@@ -126,7 +120,6 @@
             </div>
           </div>
 
-          <!-- WASHER -->
           <div id="washer-dashboard" class="lb-dashboard lb-hidden">
             <h2>Washer control center</h2>
 
@@ -141,11 +134,11 @@
             </div>
 
             <div class="lb-form lb-card-sub">
-              <h3>Pricing &amp; services</h3>
+              <h3>Pricing & services</h3>
               <div class="lb-grid-2">
                 <label><span>Wash (per lb)</span><input id="washer-price-wash" type="number" min="0" step="0.25" /></label>
-                <label><span>Wash &amp; fold (per lb)</span><input id="washer-price-fold" type="number" min="0" step="0.25" /></label>
-                <label><span>Wash, fold &amp; iron (per lb)</span><input id="washer-price-iron" type="number" min="0" step="0.25" /></label>
+                <label><span>Wash & fold (per lb)</span><input id="washer-price-fold" type="number" min="0" step="0.25" /></label>
+                <label><span>Wash, fold & iron (per lb)</span><input id="washer-price-iron" type="number" min="0" step="0.25" /></label>
                 <label><span>Pickup / delivery (flat)</span><input id="washer-price-pickup" type="number" min="0" step="0.5" /></label>
                 <label><span>Shoes (per pair)</span><input id="washer-price-shoes" type="number" min="0" step="0.5" /></label>
                 <label><span>Sewing / repair (per item)</span><input id="washer-price-sewing" type="number" min="0" step="0.5" /></label>
@@ -168,7 +161,7 @@
               <label><span>Payout method</span>
                 <select id="washer-payout-method">
                   <option value="none">Select</option>
-                  <option value="paypal">PayPal</option>
+                  <option value="paddle">Paddle</option>
                   <option value="cashapp">Cash App</option>
                   <option value="venmo">Venmo</option>
                   <option value="bank">Bank transfer</option>
@@ -186,14 +179,41 @@
         </div>
       </section>
 
-      <!-- MAP (full) -->
+      <!-- MAP -->
       <section class="lb-screen lb-hidden" id="screen-map">
         <div class="lb-card">
-          <h1>Map</h1>
-          <p class="lb-muted">Real map powered by Google Maps.</p>
-          <div id="map-canvas" style="height:420px;border-radius:16px;overflow:hidden;"></div>
+          <h1>Map & Live Tracking</h1>
+          <p class="lb-muted">Real-time locations, POIs, and job tracking.</p>
+          <div id="map-canvas" style="height:520px;border-radius:16px;overflow:hidden;"></div>
           <div class="lb-card-sub">
+            <label><span>Show POIs</span>
+              <select id="map-poi-select">
+                <option value="laundromat">Laundromats</option>
+                <option value="dollar_tree">Dollar Tree</option>
+                <option value="dollar_general">Dollar General</option>
+                <option value="all">All</option>
+              </select>
+            </label>
+            <button id="btn-map-refresh-pois" class="lb-secondary">Refresh POIs</button>
             <button id="btn-map-back" class="lb-secondary">Back</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MESSAGES -->
+      <section class="lb-screen lb-hidden" id="screen-messages">
+        <div class="lb-card">
+          <h1>Messages</h1>
+          <p class="lb-muted">Real-time chat between client and washer per job.</p>
+          <div class="lb-card-sub">
+            <label><span>Job channel</span>
+              <select id="messages-job-select"></select>
+            </label>
+            <div id="messages-list" class="lb-map-placeholder" style="height:300px;overflow:auto;padding:12px"></div>
+            <div class="lb-form" style="margin-top:8px">
+              <input id="messages-input" placeholder="Type a message..." />
+              <button id="btn-send-message" class="lb-primary">Send</button>
+            </div>
           </div>
         </div>
       </section>
@@ -202,9 +222,7 @@
       <section class="lb-screen lb-hidden" id="screen-payments">
         <div class="lb-card">
           <h1>Payments</h1>
-          <p class="lb-muted">
-            All charges are tracked locally. When you’re ready for real money, Paddle will handle checkout and payouts.
-          </p>
+          <p class="lb-muted">Paddle-ready checkout and payout hooks. Server required for real payments.</p>
 
           <div class="lb-card-sub">
             <h3>Client payment options</h3>
@@ -220,30 +238,19 @@
               <label><span>Payment label / nickname</span>
                 <input id="client-payment-handle" type="text" placeholder="My main card, cash, etc." />
               </label>
-              <p class="lb-muted">
-                This does not store real card data. It just decides how the app routes you into Paddle later.
-              </p>
               <button id="btn-save-client-payment" class="lb-primary">Save client payment setup</button>
             </div>
           </div>
 
           <div class="lb-card-sub">
             <h3>Escrow overview (local simulation)</h3>
-            <p class="lb-muted">
-              Jobs are escrowed locally with a 7% platform fee. When you integrate Paddle, keep this logic aligned with Paddle’s actual charges.
-            </p>
             <ul id="escrow-summary" class="lb-list"></ul>
           </div>
 
           <div class="lb-card-sub">
             <h3>Paddle test actions</h3>
-            <p class="lb-muted">
-              These buttons simulate how a Paddle checkout would be triggered from the app, without making real charges.
-            </p>
             <div class="lb-form">
-              <button id="btn-test-paddle-latest-job" type="button" class="lb-secondary">
-                Simulate Paddle checkout for latest job
-              </button>
+              <button id="btn-test-paddle-latest-job" class="lb-secondary">Simulate Paddle checkout for latest job</button>
             </div>
           </div>
         </div>
@@ -271,106 +278,32 @@
       <section class="lb-screen lb-hidden" id="screen-settings">
         <div class="lb-card">
           <h1>Settings</h1>
-
-          <!-- Account & privacy -->
           <div class="lb-card-sub">
-            <h3>Account &amp; privacy</h3>
+            <h3>Account & privacy</h3>
             <div class="lb-form">
-              <label class="lb-switch">
-                <input id="settings-public-profile" type="checkbox" />
-                <span>Public washer profile (show name &amp; gallery)</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-share-rating" type="checkbox" />
-                <span>Allow my ratings to be visible</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-save-history" type="checkbox" />
-                <span>Keep job history on this device</span>
-              </label>
+              <label class="lb-switch"><input id="settings-public-profile" type="checkbox" /><span>Public washer profile</span></label>
+              <label class="lb-switch"><input id="settings-share-rating" type="checkbox" /><span>Share ratings</span></label>
+              <label class="lb-switch"><input id="settings-save-history" type="checkbox" /><span>Keep job history</span></label>
             </div>
           </div>
 
-          <!-- Permissions / authorizations -->
           <div class="lb-card-sub">
-            <h3>Permissions on this device</h3>
-            <p class="lb-muted">
-              These switches unlock app features locally. They do not change system‑level permissions, only how Laundry Bubbles behaves.
-            </p>
+            <h3>Permissions</h3>
             <div class="lb-form">
-              <label class="lb-switch">
-                <input id="settings-allow-location" type="checkbox" />
-                <span>Allow map &amp; nearby washers (location)</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-allow-camera" type="checkbox" />
-                <span>Allow photo &amp; video capture for jobs</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-allow-media-gallery" type="checkbox" />
-                <span>Allow media gallery on this device</span>
-              </label>
+              <label class="lb-switch"><input id="settings-allow-location" type="checkbox" /><span>Allow location</span></label>
+              <label class="lb-switch"><input id="settings-allow-camera" type="checkbox" /><span>Allow camera/media</span></label>
+              <label class="lb-switch"><input id="settings-allow-media-gallery" type="checkbox" /><span>Allow media gallery</span></label>
             </div>
           </div>
 
-          <!-- Notifications -->
-          <div class="lb-card-sub">
-            <h3>Notifications</h3>
-            <div class="lb-form">
-              <label class="lb-switch">
-                <input id="settings-notify-job-status" type="checkbox" />
-                <span>Job status updates (local banners)</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-notify-marketing" type="checkbox" />
-                <span>Tips, offers, and update news</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Experimental / developer -->
-          <div class="lb-card-sub">
-            <h3>Experimental features</h3>
-            <p class="lb-muted">
-              These switches unlock advanced features locally. Good for testing on a single device.
-            </p>
-            <div class="lb-form">
-              <label class="lb-switch">
-                <input id="settings-unlock-pro" type="checkbox" />
-                <span>Unlock all pro washer features on this device</span>
-              </label>
-              <label class="lb-switch">
-                <input id="settings-unlock-analytics" type="checkbox" />
-                <span>Show local analytics &amp; debugging tools</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Integrations -->
           <div class="lb-card-sub">
             <h3>Integrations</h3>
-            <p class="lb-muted">
-              Google Maps key is embedded for immediate use. Paddle will handle live payments later.
-            </p>
             <div class="lb-form">
-              <label>
-                <span>Optional cloud upload endpoint (POST)</span>
-                <input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" />
-              </label>
+              <label><span>Optional cloud upload endpoint (POST)</span><input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" /></label>
+              <label><span>Paddle server endpoint</span><input id="settings-paddle-endpoint" type="text" placeholder="https://your-server.example/paddle" /></label>
             </div>
           </div>
 
-          <!-- Legal & support -->
-          <div class="lb-card-sub">
-            <h3>Legal &amp; support</h3>
-            <div class="lb-form">
-              <button id="settings-view-terms" type="button" class="lb-secondary">View terms of use</button>
-              <button id="settings-view-privacy" type="button" class="lb-secondary">View privacy notice</button>
-              <button id="settings-contact-support" type="button" class="lb-secondary">Contact support</button>
-            </div>
-          </div>
-
-          <!-- Data -->
           <div class="lb-card-sub">
             <h3>Data</h3>
             <button id="btn-save-settings" class="lb-primary">Save settings</button>
@@ -384,6 +317,7 @@
     <div id="toast-container"></div>
   </div>
 
+  <!-- app script -->
   <script src="app.js"></script>
 </body>
 </html>
