@@ -190,7 +190,7 @@
       <section class="lb-screen lb-hidden" id="screen-map">
         <div class="lb-card">
           <h1>Map</h1>
-          <p class="lb-muted">Real map powered by Google Maps. Insert your API key in app.js where indicated.</p>
+          <p class="lb-muted">Real map powered by Google Maps.</p>
           <div id="map-canvas" style="height:420px;border-radius:16px;overflow:hidden;"></div>
           <div class="lb-card-sub">
             <button id="btn-map-back" class="lb-secondary">Back</button>
@@ -257,8 +257,7 @@
 
           <div class="lb-card-sub">
             <h3>Integrations</h3>
-            <p class="lb-muted">Add your Google Maps API key and optional cloud upload endpoint here.</p>
-            <label><span>Google Maps API key</span><input id="settings-google-key" type="text" placeholder="YOUR_GOOGLE_MAPS_API_KEY" /></label>
+            <p class="lb-muted">Google Maps key is embedded for immediate use. For production, restrict the key in Google Cloud Console.</p>
             <label><span>Optional cloud upload endpoint (POST)</span><input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" /></label>
             <button id="btn-save-settings" class="lb-primary">Save settings</button>
           </div>
