@@ -44,7 +44,7 @@
               <label><span>Phone</span><input id="input-phone" type="tel" placeholder="+1 555 123 4567" /></label>
               <label><span>Profile photo</span>
                 <input id="input-profile-photo" type="file" accept="image/*" />
-                <div id="profile-photo-preview" class="lb-photo-preview lb-hidden"></div>
+                <div id="home-profile-photo-preview" class="lb-photo-preview lb-hidden"></div>
               </label>
               <button id="btn-save-profile" class="lb-primary">Save profile</button>
             </div>
@@ -202,7 +202,9 @@
       <section class="lb-screen lb-hidden" id="screen-payments">
         <div class="lb-card">
           <h1>Payments</h1>
-          <p class="lb-muted">Set up real payment methods or use the local simulated escrow for testing.</p>
+          <p class="lb-muted">
+            All charges are tracked locally. When you’re ready for real money, Paddle will handle checkout and payouts.
+          </p>
 
           <div class="lb-card-sub">
             <h3>Client payment options</h3>
@@ -210,20 +212,39 @@
               <label><span>Preferred payment method</span>
                 <select id="client-payment-method">
                   <option value="none">Select</option>
-                  <option value="paypal">PayPal</option>
-                  <option value="venmo">Venmo</option>
-                  <option value="cashapp">Cash App</option>
-                  <option value="card">Card (nickname)</option>
+                  <option value="paddle_card">Card via Paddle</option>
+                  <option value="paddle_wallet">Wallet via Paddle</option>
+                  <option value="offline">Cash / offline</option>
                 </select>
               </label>
-              <label><span>Payment handle / nickname</span><input id="client-payment-handle" type="text" placeholder="@handle or card nickname" /></label>
+              <label><span>Payment label / nickname</span>
+                <input id="client-payment-handle" type="text" placeholder="My main card, cash, etc." />
+              </label>
+              <p class="lb-muted">
+                This does not store real card data. It just decides how the app routes you into Paddle later.
+              </p>
               <button id="btn-save-client-payment" class="lb-primary">Save client payment setup</button>
             </div>
           </div>
 
           <div class="lb-card-sub">
             <h3>Escrow overview (local simulation)</h3>
+            <p class="lb-muted">
+              Jobs are escrowed locally with a 7% platform fee. When you integrate Paddle, keep this logic aligned with Paddle’s actual charges.
+            </p>
             <ul id="escrow-summary" class="lb-list"></ul>
+          </div>
+
+          <div class="lb-card-sub">
+            <h3>Paddle test actions</h3>
+            <p class="lb-muted">
+              These buttons simulate how a Paddle checkout would be triggered from the app, without making real charges.
+            </p>
+            <div class="lb-form">
+              <button id="btn-test-paddle-latest-job" type="button" class="lb-secondary">
+                Simulate Paddle checkout for latest job
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -250,20 +271,109 @@
       <section class="lb-screen lb-hidden" id="screen-settings">
         <div class="lb-card">
           <h1>Settings</h1>
+
+          <!-- Account & privacy -->
           <div class="lb-card-sub">
-            <h3>Theme</h3>
-            <p class="lb-muted">Blue, purple, and white 70s bubbles are locked in.</p>
+            <h3>Account &amp; privacy</h3>
+            <div class="lb-form">
+              <label class="lb-switch">
+                <input id="settings-public-profile" type="checkbox" />
+                <span>Public washer profile (show name &amp; gallery)</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-share-rating" type="checkbox" />
+                <span>Allow my ratings to be visible</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-save-history" type="checkbox" />
+                <span>Keep job history on this device</span>
+              </label>
+            </div>
           </div>
 
+          <!-- Permissions / authorizations -->
+          <div class="lb-card-sub">
+            <h3>Permissions on this device</h3>
+            <p class="lb-muted">
+              These switches unlock app features locally. They do not change system‑level permissions, only how Laundry Bubbles behaves.
+            </p>
+            <div class="lb-form">
+              <label class="lb-switch">
+                <input id="settings-allow-location" type="checkbox" />
+                <span>Allow map &amp; nearby washers (location)</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-allow-camera" type="checkbox" />
+                <span>Allow photo &amp; video capture for jobs</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-allow-media-gallery" type="checkbox" />
+                <span>Allow media gallery on this device</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="lb-card-sub">
+            <h3>Notifications</h3>
+            <div class="lb-form">
+              <label class="lb-switch">
+                <input id="settings-notify-job-status" type="checkbox" />
+                <span>Job status updates (local banners)</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-notify-marketing" type="checkbox" />
+                <span>Tips, offers, and update news</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Experimental / developer -->
+          <div class="lb-card-sub">
+            <h3>Experimental features</h3>
+            <p class="lb-muted">
+              These switches unlock advanced features locally. Good for testing on a single device.
+            </p>
+            <div class="lb-form">
+              <label class="lb-switch">
+                <input id="settings-unlock-pro" type="checkbox" />
+                <span>Unlock all pro washer features on this device</span>
+              </label>
+              <label class="lb-switch">
+                <input id="settings-unlock-analytics" type="checkbox" />
+                <span>Show local analytics &amp; debugging tools</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Integrations -->
           <div class="lb-card-sub">
             <h3>Integrations</h3>
-            <p class="lb-muted">Google Maps key is embedded for immediate use. For production, restrict the key in Google Cloud Console.</p>
-            <label><span>Optional cloud upload endpoint (POST)</span><input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" /></label>
-            <button id="btn-save-settings" class="lb-primary">Save settings</button>
+            <p class="lb-muted">
+              Google Maps key is embedded for immediate use. Paddle will handle live payments later.
+            </p>
+            <div class="lb-form">
+              <label>
+                <span>Optional cloud upload endpoint (POST)</span>
+                <input id="settings-cloud-endpoint" type="text" placeholder="https://your-upload-endpoint.example/upload" />
+              </label>
+            </div>
           </div>
 
+          <!-- Legal & support -->
+          <div class="lb-card-sub">
+            <h3>Legal &amp; support</h3>
+            <div class="lb-form">
+              <button id="settings-view-terms" type="button" class="lb-secondary">View terms of use</button>
+              <button id="settings-view-privacy" type="button" class="lb-secondary">View privacy notice</button>
+              <button id="settings-contact-support" type="button" class="lb-secondary">Contact support</button>
+            </div>
+          </div>
+
+          <!-- Data -->
           <div class="lb-card-sub">
             <h3>Data</h3>
+            <button id="btn-save-settings" class="lb-primary">Save settings</button>
             <button id="btn-clear-data" class="lb-danger">Clear all local data</button>
           </div>
         </div>
