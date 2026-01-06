@@ -17,15 +17,15 @@
       <nav class="lb-nav">
         <button class="lb-nav-btn" data-nav="home">Home</button>
         <button class="lb-nav-btn" data-nav="dashboard">Dashboard</button>
+        <button class="lb-nav-btn" data-nav="payments">Payments</button>
         <button class="lb-nav-btn" data-nav="settings">Settings</button>
         <button class="lb-nav-btn" data-nav="profile">Profile</button>
       </nav>
     </header>
 
-    <!-- Screens -->
     <main class="lb-main">
 
-      <!-- Auth / role selection -->
+      <!-- HOME: profile + role -->
       <section class="lb-screen" id="screen-home">
         <div class="lb-hero-bubbles">
           <div class="lb-hero-bubble big"></div>
@@ -58,7 +58,7 @@
 
             <div id="role-section" class="lb-role-section lb-hidden">
               <h2>Step 2 · Choose your side</h2>
-              <p class="lb-muted">You can switch roles later in Settings.</p>
+              <p class="lb-muted">You can switch roles later in Profile.</p>
               <div class="lb-role-buttons">
                 <button class="lb-role-btn" data-role="client">
                   I need laundry done
@@ -72,33 +72,41 @@
         </div>
       </section>
 
-      <!-- Dashboard -->
+      <!-- DASHBOARD -->
       <section class="lb-screen lb-hidden" id="screen-dashboard">
         <div class="lb-card">
           <h1 id="dashboard-title">Dashboard</h1>
           <p id="dashboard-subtitle" class="lb-muted"></p>
 
-          <!-- Client dashboard -->
+          <!-- CLIENT DASHBOARD -->
           <div id="client-dashboard" class="lb-dashboard lb-hidden">
-            <h2>Find a washer</h2>
-            <div class="lb-map-panel">
-              <div class="lb-map-header">
-                <button id="btn-client-refresh-location" class="lb-secondary">
-                  Update my location
-                </button>
-                <button id="btn-client-refresh-washers" class="lb-secondary">
-                  Refresh active washers
-                </button>
-              </div>
-              <div id="map-client" class="lb-map-placeholder">
-                <p>Bubble Map · Active washers near you</p>
-                <ul id="client-washer-list" class="lb-list"></ul>
+            <h2>Client map & jobs</h2>
+
+            <div class="lb-card-sub">
+              <h3>Find a washer</h3>
+              <div class="lb-map-panel">
+                <div class="lb-map-header">
+                  <button id="btn-client-refresh-location" class="lb-secondary">
+                    Update my location
+                  </button>
+                  <button id="btn-client-refresh-washers" class="lb-secondary">
+                    Refresh active washers
+                  </button>
+                  <button id="btn-client-open-map" class="lb-secondary">
+                    Open full map
+                  </button>
+                </div>
+                <div id="map-client" class="lb-map-placeholder">
+                  <p>Bubble Map · Active washers near you</p>
+                  <ul id="client-washer-list" class="lb-list"></ul>
+                </div>
               </div>
             </div>
 
             <div id="client-selected-washer" class="lb-card-sub lb-hidden">
               <h3>Washer profile</h3>
               <div id="client-washer-profile"></div>
+
               <h4>Create a pickup / drop off</h4>
               <form id="client-job-form" class="lb-form">
                 <label>
@@ -120,6 +128,13 @@
                   <span>Estimated weight (lbs)</span>
                   <input type="number" id="client-job-weight" min="1" value="10" />
                 </label>
+                <label>
+                  <span>Use pickup / delivery</span>
+                  <select id="client-job-pickup">
+                    <option value="yes">Yes · pickup / drop off</option>
+                    <option value="no">No · I’ll handle drop off</option>
+                  </select>
+                </label>
                 <button type="button" id="btn-job-calc" class="lb-secondary">
                   Calculate total
                 </button>
@@ -136,7 +151,7 @@
             </div>
           </div>
 
-          <!-- Washer dashboard -->
+          <!-- WASHER DASHBOARD -->
           <div id="washer-dashboard" class="lb-dashboard lb-hidden">
             <h2>Washer control center</h2>
 
@@ -145,6 +160,10 @@
               <label class="lb-switch">
                 <input type="checkbox" id="washer-active-toggle" />
                 <span>Active · show me on the map</span>
+              </label>
+              <label>
+                <span>Display name</span>
+                <input type="text" id="washer-display-name" placeholder="Your washer name" />
               </label>
               <label>
                 <span>My location (approx)</span>
@@ -221,7 +240,49 @@
         </div>
       </section>
 
-      <!-- Profile screen -->
+      <!-- PAYMENTS SCREEN -->
+      <section class="lb-screen lb-hidden" id="screen-payments">
+        <div class="lb-card">
+          <h1>Payments</h1>
+          <p class="lb-muted">
+            All payments are simulated locally. Client pays before pickup, 7% goes to Laundry Bubbles,
+            and the rest is released to the washer when the job is completed.
+          </p>
+
+          <div class="lb-card-sub">
+            <h3>Client payment options</h3>
+            <div class="lb-form">
+              <label>
+                <span>Preferred payment method</span>
+                <select id="client-payment-method">
+                  <option value="none">Select</option>
+                  <option value="paypal">PayPal</option>
+                  <option value="cashapp">Cash App</option>
+                  <option value="venmo">Venmo</option>
+                  <option value="card">Saved card (nickname only)</option>
+                </select>
+              </label>
+              <label>
+                <span>Payment handle / nickname</span>
+                <input type="text" id="client-payment-handle" placeholder="@handle or card nickname" />
+              </label>
+              <button id="btn-save-client-payment" class="lb-primary">
+                Save client payment setup
+              </button>
+            </div>
+          </div>
+
+          <div class="lb-card-sub">
+            <h3>Escrow overview (local simulation)</h3>
+            <p class="lb-muted">
+              These amounts live only on this device. In production you would map these to a real payment provider.
+            </p>
+            <ul id="escrow-summary" class="lb-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILE -->
       <section class="lb-screen lb-hidden" id="screen-profile">
         <div class="lb-card">
           <h1>Profile</h1>
@@ -250,7 +311,7 @@
         </div>
       </section>
 
-      <!-- Settings screen -->
+      <!-- SETTINGS -->
       <section class="lb-screen lb-hidden" id="screen-settings">
         <div class="lb-card">
           <h1>Settings</h1>
@@ -258,15 +319,14 @@
           <div class="lb-card-sub">
             <h3>Theme</h3>
             <p class="lb-muted">
-              Blue, purple, and white 70s bubbles are locked in.
+              Blue, purple, and white 70s bubbles are locked in. All screens share the same cosmic style.
             </p>
           </div>
 
           <div class="lb-card-sub">
             <h3>Payment system</h3>
             <p class="lb-muted">
-              Payments are simulated locally with escrow and a 7% platform fee (non‑Stripe).
-              In production, swap this module for a real provider.
+              Payments use a non‑Stripe, local escrow model. Swap this logic for your real provider later.
             </p>
           </div>
 
@@ -275,6 +335,25 @@
             <button id="btn-clear-data" class="lb-danger">
               Clear all local data
             </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FULL MAP SCREEN -->
+      <section class="lb-screen lb-hidden" id="screen-map">
+        <div class="lb-card">
+          <h1>Map</h1>
+          <p class="lb-muted">
+            This is a bubble‑styled mock map. Client and active washer are placed in relation to each other on this device.
+          </p>
+          <div class="lb-map-placeholder" id="map-full">
+            <p>Bubble Map · Client & washer positions</p>
+            <div id="map-full-client" class="lb-muted"></div>
+            <div id="map-full-washer" class="lb-muted" style="margin-top:6px;"></div>
+            <div id="map-full-distance" class="lb-muted" style="margin-top:6px;"></div>
+          </div>
+          <div class="lb-card-sub">
+            <button id="btn-map-back" class="lb-secondary">Back to dashboard</button>
           </div>
         </div>
       </section>
