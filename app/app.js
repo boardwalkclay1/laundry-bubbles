@@ -1,306 +1,264 @@
-/* public/app.js
-   Frontend logic:
-   - Simple SPA navigation between screens
-   - Socket.IO realtime location & messaging
-   - Google Maps dynamic loader + Places POI search (laundromats, Dollar Tree, Dollar General)
-   - Job creation and local job list (calls server /api/jobs)
-   - Payment test endpoint calls /api/payments/charge (server handles NMI)
-   - Settings allow you to set server base URL and Google Maps key for demo
-*/
+// public/app.js
+// Lightweight SPA for Laundry Bubbles
+// Placeholders: implement collectPaymentToken() with your NMI Collect.js integration
 
-const socket = io(); // connects to same origin
+const state = {
+  washers: [],
+  jobs: [],
+  map: null,
+  markers: {},
+  userLocation: null
+};
 
-// Basic helpers
-const $ = (s) => document.querySelector(s);
-const $all = (s) => Array.from(document.querySelectorAll(s));
-const SERVER = { baseUrl: localStorage.getItem('lb_server_url') || (location.origin) };
-
-function showToast(msg){
-  const c = $("#toast-container");
-  if(!c) return;
-  const el = document.createElement("div");
-  el.className = "lb-toast";
-  el.textContent = msg;
-  c.appendChild(el);
-  setTimeout(()=>{ el.style.opacity = "0"; setTimeout(()=>c.removeChild(el),220) },2500);
-}
-
-// SPA navigation
-function showScreen(id){
-  $all('.lb-screen').forEach(s => s.classList.add('lb-hidden'));
-  const el = document.getElementById(id);
-  if(el) el.classList.remove('lb-hidden');
-}
-$all('.lb-nav-btn').forEach(btn => btn.addEventListener('click', () => {
-  const target = btn.dataset.nav;
-  if(target === 'map') initMap(); // ensure map loads
-  if(target === 'messages') initMessages();
-  showScreen('screen-' + target);
-}));
-
-// Profile save
-$('#btn-save-profile').addEventListener('click', () => {
-  const name = $('#input-name').value.trim();
-  const email = $('#input-email').value.trim();
-  const phone = $('#input-phone').value.trim();
-  if(!name || !email) { showToast('Name and email required'); return; }
-  const profile = { name, email, phone, role: 'client' };
-  localStorage.setItem('lb_profile', JSON.stringify(profile));
-  hydrateProfileUI();
-  showToast('Profile saved locally');
-});
-
-// Profile UI
-function hydrateProfileUI(){
-  const p = JSON.parse(localStorage.getItem('lb_profile') || 'null');
-  if(!p) return;
-  $('#profile-name').value = p.name || '';
-  $('#profile-email').value = p.email || '';
-  $('#profile-role').value = p.role || 'client';
-}
-$('#btn-profile-save').addEventListener('click', () => {
-  const p = JSON.parse(localStorage.getItem('lb_profile') || '{}');
-  p.name = $('#profile-name').value.trim();
-  p.email = $('#profile-email').value.trim();
-  p.role = $('#profile-role').value;
-  localStorage.setItem('lb_profile', JSON.stringify(p));
-  showToast('Profile updated');
-});
-
-// Settings
-$('#btn-save-settings').addEventListener('click', () => {
-  const url = $('#settings-server-url').value.trim() || location.origin;
-  const gkey = $('#settings-google-key').value.trim();
-  localStorage.setItem('lb_server_url', url);
-  localStorage.setItem('lb_google_key', gkey);
-  SERVER.baseUrl = url;
-  showToast('Settings saved');
-});
-
-// Jobs: create
-$('#client-job-form')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const profile = JSON.parse(localStorage.getItem('lb_profile') || '{}');
-  if(!profile || !profile.email){ showToast('Create profile first'); return; }
-  const jobId = 'job_' + Date.now();
-  const serviceType = $('#client-service-type').value;
-  const weight = Number($('#client-job-weight').value || 0);
-  const tip = Number($('#client-job-tip').value || 0);
-  const base = 1.5 * weight; // simple pricing; replace with washer pricing in real app
-  const total = Math.round((base + tip) * 100) / 100;
-  const job = {
-    id: jobId,
-    client: { name: profile.name, email: profile.email },
-    serviceType, weight, tip, total,
-    status: 'pending',
-    createdAt: Date.now()
-  };
-  // send to server
-  const resp = await fetch(`${SERVER.baseUrl}/api/jobs`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(job)
-  });
-  const data = await resp.json();
-  if(data.ok){ showToast('Job created'); loadJobs(); } else showToast('Job creation failed');
-});
-
-// Load jobs
-async function loadJobs(){
-  const resp = await fetch(`${SERVER.baseUrl}/api/jobs`);
-  const data = await resp.json();
-  const list = $('#client-job-list');
-  list.innerHTML = '';
-  if(!data.jobs || !data.jobs.length){ list.innerHTML = '<li class="lb-muted">No jobs yet</li>'; return; }
-  data.jobs.forEach(job => {
-    const li = document.createElement('li'); li.className = 'lb-list-item';
-    const main = document.createElement('div'); main.className = 'lb-list-item-main';
-    const title = document.createElement('div'); title.textContent = `${job.serviceType} · $${job.total}`;
-    const meta = document.createElement('div'); meta.className = 'lb-muted'; meta.textContent = `Status: ${job.status}`;
-    main.appendChild(title); main.appendChild(meta);
-    li.appendChild(main);
-    list.appendChild(li);
+// Utility
+function el(id) { return document.getElementById(id); }
+function q(sel, root=document) { return root.querySelector(sel); }
+function on(selector, event, fn) {
+  document.addEventListener(event, e => {
+    if (e.target.matches(selector) || e.target.closest(selector)) fn(e);
   });
 }
 
-// Washer job list (same endpoint)
-async function loadWasherJobs(){
-  const resp = await fetch(`${SERVER.baseUrl}/api/jobs`);
-  const data = await resp.json();
-  const list = $('#washer-job-list');
-  list.innerHTML = '';
-  if(!data.jobs || !data.jobs.length){ list.innerHTML = '<li class="lb-muted">No jobs yet</li>'; return; }
-  data.jobs.forEach(job => {
-    const li = document.createElement('li'); li.className = 'lb-list-item';
-    const main = document.createElement('div'); main.className = 'lb-list-item-main';
-    const title = document.createElement('div'); title.textContent = `${job.client.name} · ${job.serviceType} · $${job.total}`;
-    const meta = document.createElement('div'); meta.className = 'lb-muted'; meta.textContent = `Status: ${job.status}`;
-    main.appendChild(title); main.appendChild(meta);
-    const actions = document.createElement('div');
-    const btnAccept = document.createElement('button'); btnAccept.className = 'lb-primary'; btnAccept.textContent = 'Accept';
-    btnAccept.addEventListener('click', async () => {
-      // Accept: update job locally on server (set status accepted)
-      const resp = await fetch(`${SERVER.baseUrl}/api/jobs/${job.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'accepted', washer: { name: localStorage.getItem('lb_profile') ? JSON.parse(localStorage.getItem('lb_profile')).name : 'washer' } })
-      });
-      const d = await resp.json();
-      if(d.ok){ showToast('Job accepted'); loadWasherJobs(); loadJobs(); }
-    });
-    actions.appendChild(btnAccept);
-    li.appendChild(main); li.appendChild(actions);
-    list.appendChild(li);
+// Init
+window.initMap = function initMap() {
+  const defaultCenter = { lat: 33.7490, lng: -84.3880 };
+  state.map = new google.maps.Map(el('map-canvas'), {
+    center: defaultCenter,
+    zoom: 13,
+    disableDefaultUI: true
   });
-}
 
-// Test charge (calls server /api/payments/charge)
-$('#btn-test-charge')?.addEventListener('click', async () => {
-  const token = $('#test-payment-token').value.trim();
-  const jobId = $('#test-job-id').value.trim();
-  if(!token || !jobId){ showToast('token and jobId required'); return; }
-  const resp = await fetch(`${SERVER.baseUrl}/api/payments/charge`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jobId, paymentToken: token })
-  });
-  const data = await resp.json();
-  if(data.ok){ showToast('Charge successful (server)'); loadJobs(); } else showToast('Charge failed');
-});
+  // Try to get user location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      state.userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      state.map.setCenter(state.userLocation);
+      addUserMarker();
+    }, () => {});
+  }
 
-// Socket.IO: publish location and listen for updates
-function startPublishingLocation(){
-  const profile = JSON.parse(localStorage.getItem('lb_profile') || '{}');
-  if(!profile || !profile.email) return;
-  const userKey = profile.email.replace(/[@.]/g, '_');
-  socket.emit('join:user', userKey);
-  socket.emit('join:job', ''); // join job rooms as needed
-  if(navigator.geolocation){
-    navigator.geolocation.watchPosition(pos => {
-      const payload = { userKey, lat: pos.coords.latitude, lng: pos.coords.longitude, ts: Date.now() };
-      socket.emit('location:update', payload);
-    }, err => console.warn('geo err', err), { enableHighAccuracy: true });
+  loadWashers();
+  loadJobs();
+};
+
+// Fetch washers from server
+async function loadWashers() {
+  try {
+    const res = await fetch('/api/washers');
+    state.washers = await res.json();
+    renderWashersOnMap();
+    renderFeed();
+  } catch (err) {
+    console.error('Failed to load washers', err);
   }
 }
 
-// Messaging UI
-function initMessages(){
-  const select = $('#messages-job-select');
-  select.innerHTML = '';
-  fetch(`${SERVER.baseUrl}/api/jobs`).then(r=>r.json()).then(data=>{
-    (data.jobs||[]).forEach(j => {
-      const opt = document.createElement('option'); opt.value = j.id; opt.textContent = `${j.id} · ${j.serviceType}`;
-      select.appendChild(opt);
+// Fetch jobs
+async function loadJobs() {
+  try {
+    const res = await fetch('/api/jobs');
+    state.jobs = await res.json();
+    renderFeed();
+  } catch (err) {
+    console.error('Failed to load jobs', err);
+  }
+}
+
+// Map helpers
+function addUserMarker() {
+  if (!state.userLocation) return;
+  new google.maps.Marker({
+    position: state.userLocation,
+    map: state.map,
+    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: '#1976d2', fillOpacity: 1, strokeWeight: 0 }
+  });
+}
+
+function renderWashersOnMap() {
+  // clear existing
+  Object.values(state.markers).forEach(m => m.setMap(null));
+  state.markers = {};
+
+  state.washers.forEach(w => {
+    const pos = { lat: Number(w.lat), lng: Number(w.lng) };
+    const marker = new google.maps.Marker({
+      position: pos,
+      map: state.map,
+      title: w.displayName,
+      icon: w.active ? undefined : '/icons/washer-offline.png'
     });
-  });
-  select.addEventListener('change', () => {
-    const jobId = select.value;
-    if(jobId) socket.emit('join:job', jobId);
-    $('#messages-list').innerHTML = '';
-  });
-  $('#btn-send-message').addEventListener('click', () => {
-    const jobId = select.value;
-    const text = $('#messages-input').value.trim();
-    if(!jobId || !text) return;
-    const profile = JSON.parse(localStorage.getItem('lb_profile') || '{}');
-    const msg = { jobId, from: profile.name || 'anon', text, ts: Date.now() };
-    socket.emit('message:send', msg);
-    $('#messages-input').value = '';
-  });
-  socket.on('message:received', (msg) => {
-    const list = $('#messages-list');
-    const el = document.createElement('div'); el.style.marginBottom = '8px';
-    el.innerHTML = `<strong>${msg.from}</strong> <span class="lb-muted" style="font-size:12px">${new Date(msg.ts).toLocaleTimeString()}</span><div>${msg.text}</div>`;
-    list.appendChild(el); list.scrollTop = list.scrollHeight;
+    marker.addListener('click', () => showWasherProfile(w));
+    state.markers[w.id] = marker;
   });
 }
 
-// Map: dynamic loader and POI search
-let mapInstance = null;
-let mapMarkers = [];
-let poiMarkers = [];
-let placesService = null;
-function loadGoogleMaps(key){
-  return new Promise((resolve, reject) => {
-    if(window.google && window.google.maps) return resolve(window.google.maps);
-    const id = 'gmaps-script';
-    if(document.getElementById(id)) return resolve(window.google.maps);
-    const s = document.createElement('script');
-    s.id = id;
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
-    s.async = true; s.defer = true;
-    s.onload = () => resolve(window.google.maps);
-    s.onerror = reject;
-    document.head.appendChild(s);
+// UI rendering
+function renderFeed() {
+  const feed = el('feed-list');
+  if (!feed) return;
+  feed.innerHTML = '';
+
+  // Jobs first
+  state.jobs.slice().reverse().forEach(job => {
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.innerHTML = `
+      <div class="feed-item-head">
+        <strong>${escapeHtml(job.client?.name || 'Client')}</strong>
+        <span class="muted">${new Date(job.createdAt || Date.now()).toLocaleString()}</span>
+      </div>
+      <div class="feed-item-body">
+        <div>${escapeHtml(job.serviceType || 'service')}</div>
+        <div class="muted">Total: $${Number(job.total || 0).toFixed(2)}</div>
+      </div>
+      <div class="feed-item-actions">
+        <button class="lb-secondary btn-view-job" data-id="${job.id}">View</button>
+        <button class="lb-primary btn-pay-job" data-id="${job.id}">Pay</button>
+      </div>
+    `;
+    feed.appendChild(item);
+  });
+
+  // Washers as cards
+  state.washers.forEach(w => {
+    const card = document.createElement('div');
+    card.className = 'washer-card';
+    card.innerHTML = `
+      <div class="washer-head">
+        <strong>${escapeHtml(w.displayName)}</strong>
+        <span class="muted">${w.distance ? w.distance + ' mi' : ''}</span>
+      </div>
+      <div class="washer-body">
+        <div class="muted">${escapeHtml(w.bio || '')}</div>
+      </div>
+      <div class="washer-actions">
+        <button class="lb-secondary btn-open-washer" data-id="${w.id}">Open</button>
+        <button class="lb-primary btn-request" data-id="${w.id}">Request Pickup</button>
+      </div>
+    `;
+    feed.appendChild(card);
   });
 }
 
-async function initMap(){
-  const key = localStorage.getItem('lb_google_key') || '';
-  if(!key){ showToast('Set Google Maps key in Settings'); return; }
-  await loadGoogleMaps(key);
-  const el = document.getElementById('map-canvas');
-  if(!el) return;
-  mapInstance = new google.maps.Map(el, { center: { lat: 33.7490, lng: -84.3880 }, zoom: 12 });
-  placesService = new google.maps.places.PlacesService(mapInstance);
-  refreshMapMarkers();
-  refreshPOIs('all');
+// Navigation
+on('.bubble-btn', 'click', e => {
+  const nav = e.target.closest('.bubble-btn').dataset.nav;
+  navigateTo(nav);
+});
+
+function navigateTo(nav) {
+  // simple mapping
+  if (nav === 'map') {
+    document.querySelector('.pane-left').style.display = 'none';
+    document.querySelector('.pane-right').style.display = 'block';
+    google.maps.event.trigger(state.map, 'resize');
+  } else {
+    document.querySelector('.pane-left').style.display = 'block';
+    document.querySelector('.pane-right').style.display = 'none';
+  }
 }
 
-function clearMarkers(arr){ arr.forEach(m => m.setMap(null)); arr.length = 0; }
+// Job actions
+on('.btn-pay-job', 'click', async e => {
+  const id = e.target.dataset.id;
+  const job = state.jobs.find(j => j.id === id);
+  if (!job) return alert('Job not found');
 
-function refreshMapMarkers(){
-  if(!mapInstance) return;
-  clearMarkers(mapMarkers);
-  // show local user and washer markers from server jobs or local storage
-  fetch(`${SERVER.baseUrl}/api/jobs`).then(r=>r.json()).then(data=>{
-    (data.jobs||[]).forEach(job => {
-      if(job.washer && job.washer.location){
-        const m = new google.maps.Marker({ map: mapInstance, position: job.washer.location, title: job.washer.name || 'Washer' });
-        mapMarkers.push(m);
-      }
+  // Collect payment token via your NMI Collect.js integration
+  try {
+    const token = await collectPaymentToken(); // implement this with NMI Collect.js
+    const resp = await fetch('/api/payments/charge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId: id, paymentToken: token, idempotencyKey: `job-${id}-${Date.now()}` })
     });
+    const data = await resp.json();
+    if (data.success) {
+      alert('Payment successful: ' + data.transactionId);
+      loadJobs();
+    } else {
+      alert('Payment failed: ' + (data.error || data.details || JSON.stringify(data)));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Payment error');
+  }
+});
+
+// Placeholder for tokenization integration
+async function collectPaymentToken() {
+  // Replace this with your NMI Collect.js flow.
+  // Example: return await NMICollect.createToken({ cardNumber, exp, cvv });
+  // For now, prompt for a test token in dev
+  return prompt('Enter test payment token (dev only)');
+}
+
+// Washer profile modal
+function showWasherProfile(w) {
+  const modal = openModal(`
+    <h3>${escapeHtml(w.displayName)}</h3>
+    <p class="muted">${escapeHtml(w.bio || '')}</p>
+    <p>Rating: ${w.rating || '—'}</p>
+    <div class="modal-actions">
+      <button id="modal-request" class="lb-primary">Request Pickup</button>
+      <button id="modal-close" class="lb-secondary">Close</button>
+    </div>
+  `);
+  on('#modal-request', 'click', async () => {
+    // create a job for this washer
+    const job = {
+      id: 'job_' + Date.now(),
+      client: { name: 'Guest' },
+      serviceType: 'wash',
+      weight: 10,
+      tip: 0,
+      total: 15,
+      washerId: w.id
+    };
+    await fetch('/api/jobs', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(job) });
+    closeModal();
+    loadJobs();
   });
 }
 
-function refreshPOIs(type){
-  if(!mapInstance || !placesService) return;
-  clearMarkers(poiMarkers);
-  const center = mapInstance.getCenter();
-  const requests = [];
-  if(type === 'laundromat' || type === 'all') requests.push({ keyword: 'laundromat', location: center, radius: 5000 });
-  if(type === 'dollar_tree' || type === 'all') requests.push({ keyword: 'Dollar Tree', location: center, radius: 8000 });
-  if(type === 'dollar_general' || type === 'all') requests.push({ keyword: 'Dollar General', location: center, radius: 8000 });
-
-  requests.forEach(req => {
-    placesService.nearbySearch(req, (results, status) => {
-      if(status === google.maps.places.PlacesServiceStatus.OK && results){
-        results.slice(0,8).forEach(place => {
-          const marker = new google.maps.Marker({ map: mapInstance, position: place.geometry.location, title: place.name });
-          const info = `<strong>${place.name}</strong><div class="lb-muted">${place.vicinity || ''}</div><div style="margin-top:6px"><em>Tip:</em> Check machine sizes and detergent availability.</div>`;
-          const infowindow = new google.maps.InfoWindow({ content: info });
-          marker.addListener('click', () => infowindow.open(mapInstance, marker));
-          poiMarkers.push(marker);
-        });
-      }
-    });
-  });
+// Modal helpers
+function openModal(html) {
+  const root = el('modal-root');
+  root.innerHTML = `<div class="modal"><div class="modal-body">${html}</div></div>`;
+  root.setAttribute('aria-hidden', 'false');
+  return root;
+}
+function closeModal() {
+  const root = el('modal-root');
+  root.innerHTML = '';
+  root.setAttribute('aria-hidden', 'true');
 }
 
-// UI wiring
-$('#btn-client-open-map')?.addEventListener('click', () => { initMap(); showScreen('screen-map'); });
-$('#btn-map-refresh-pois')?.addEventListener('click', () => { const sel = $('#map-poi-select').value; refreshPOIs(sel); });
-$('#btn-map-back')?.addEventListener('click', () => showScreen('screen-dashboard'));
+// Helpers
+function escapeHtml(s='') {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-// initial load
+// Wire up controls
+el('btn-center-me')?.addEventListener('click', () => {
+  if (state.userLocation) state.map.setCenter(state.userLocation);
+});
+el('btn-new-job')?.addEventListener('click', () => {
+  navigateTo('home');
+  openModal(`<h3>Create Pickup</h3>
+    <p>Use the feed to create a job or request a washer from the map.</p>
+    <div class="modal-actions"><button id="modal-close2" class="lb-secondary">Close</button></div>`);
+  on('#modal-close2', 'click', closeModal);
+});
+
+// initial layout
 document.addEventListener('DOMContentLoaded', () => {
-  hydrateProfileUI();
-  loadJobs();
-  loadWasherJobs();
-  startPublishingLocation();
-  showScreen('screen-home');
-
-  // populate settings inputs
-  $('#settings-server-url').value = localStorage.getItem('lb_server_url') || location.origin;
-  $('#settings-google-key').value = localStorage.getItem('lb_google_key') || '';
+  // show both panes on wide screens
+  if (window.innerWidth > 900) {
+    document.querySelector('.pane-left').style.display = 'block';
+    document.querySelector('.pane-right').style.display = 'block';
+  } else {
+    document.querySelector('.pane-left').style.display = 'block';
+    document.querySelector('.pane-right').style.display = 'none';
+  }
 });
