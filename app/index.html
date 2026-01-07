@@ -4,196 +4,66 @@
   <meta charset="utf-8" />
   <title>Laundry Bubbles</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <!-- Google Maps JS: replace YOUR_BROWSER_KEY with your restricted browser key -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_BROWSER_KEY&libraries=places&callback=initMap"></script>
 </head>
 <body>
-  <div id="app">
+  <div id="app" class="app-root">
     <header class="lb-header">
       <div class="lb-logo-bubble">
         <span class="lb-logo-main">Laundry</span>
         <span class="lb-logo-sub">Bubbles</span>
       </div>
-      <nav class="lb-nav">
-        <button class="lb-nav-btn" data-nav="home">Home</button>
-        <button class="lb-nav-btn" data-nav="dashboard">Dashboard</button>
-        <button class="lb-nav-btn" data-nav="map">Map</button>
-        <button class="lb-nav-btn" data-nav="messages">Messages</button>
-        <button class="lb-nav-btn" data-nav="payments">Payments</button>
-        <button class="lb-nav-btn" data-nav="settings">Settings</button>
-        <button class="lb-nav-btn" data-nav="profile">Profile</button>
-      </nav>
+      <div class="lb-search">
+        <input id="search-input" placeholder="Search washers, services, addresses" />
+      </div>
+      <div class="lb-actions">
+        <button id="btn-notifications" class="icon-btn">🔔</button>
+        <button id="btn-profile" class="icon-btn">👤</button>
+      </div>
     </header>
 
     <main class="lb-main">
-      <!-- HOME -->
-      <section class="lb-screen" id="screen-home">
-        <div class="lb-card">
-          <h1>Welcome to Laundry Bubbles</h1>
-          <p class="lb-tagline">Real-time pickups, secure payments, and washer galleries.</p>
-          <div class="lb-form">
-            <label><span>Name</span><input id="input-name" type="text" /></label>
-            <label><span>Email</span><input id="input-email" type="email" /></label>
-            <label><span>Phone</span><input id="input-phone" type="tel" /></label>
-            <button id="btn-save-profile" class="lb-primary">Save profile</button>
-          </div>
+      <section id="feed" class="pane pane-left">
+        <div class="pane-header">
+          <h2>Feed</h2>
+          <button id="btn-new-job" class="lb-primary">New Pickup</button>
         </div>
+        <div id="feed-list" class="feed-list"></div>
       </section>
 
-      <!-- DASHBOARD -->
-      <section class="lb-screen lb-hidden" id="screen-dashboard">
-        <div class="lb-card">
-          <h1 id="dashboard-title">Dashboard</h1>
-          <p id="dashboard-subtitle" class="lb-muted"></p>
-
-          <div id="client-dashboard" class="lb-dashboard lb-hidden">
-            <h2>Find a washer</h2>
-            <div class="lb-card-sub">
-              <div class="lb-map-header">
-                <button id="btn-client-refresh-location" class="lb-secondary">Update my location</button>
-                <button id="btn-client-refresh-washers" class="lb-secondary">Refresh washers</button>
-                <button id="btn-client-open-map" class="lb-secondary">Open map</button>
-              </div>
-              <div id="map-client" class="lb-map-placeholder">
-                <p>Active washers & nearby POIs</p>
-                <ul id="client-washer-list" class="lb-list"></ul>
-              </div>
-            </div>
-
-            <div id="client-selected-washer" class="lb-card-sub lb-hidden">
-              <h3>Washer profile</h3>
-              <div id="client-washer-profile"></div>
-              <h4>Create pickup / drop off</h4>
-              <form id="client-job-form" class="lb-form">
-                <label><span>Service type</span>
-                  <select id="client-service-type">
-                    <option value="wash">Wash</option>
-                    <option value="wash_fold">Wash & Fold</option>
-                    <option value="wash_fold_iron">Wash, Fold & Iron</option>
-                    <option value="shoes">Shoes</option>
-                    <option value="sewing">Sewing / Repair</option>
-                    <option value="other">Other</option>
-                  </select>
-                </label>
-                <label><span>Description</span><textarea id="client-job-notes"></textarea></label>
-                <label><span>Estimated weight (lbs)</span><input id="client-job-weight" type="number" min="1" value="10" /></label>
-                <label><span>Tip (optional)</span><input id="client-job-tip" type="number" min="0" step="0.5" value="0" /></label>
-                <button type="button" id="btn-job-calc" class="lb-secondary">Calculate total</button>
-                <div id="client-job-total" class="lb-job-total lb-muted"></div>
-                <button type="submit" class="lb-primary">Create job (escrow simulated)</button>
-              </form>
-            </div>
-
-            <div class="lb-card-sub">
-              <h3>My jobs</h3>
-              <ul id="client-job-list" class="lb-list"></ul>
-            </div>
-          </div>
-
-          <div id="washer-dashboard" class="lb-dashboard lb-hidden">
-            <h2>Washer control center</h2>
-            <div class="lb-form lb-card-sub">
-              <label class="lb-switch"><input id="washer-active-toggle" type="checkbox" /><span>Active · show me on the map</span></label>
-              <label><span>Display name</span><input id="washer-display-name" type="text" /></label>
-              <label><span>Use my location</span><button id="btn-washer-use-location" class="lb-secondary">Use my current location</button></label>
-            </div>
-
-            <div class="lb-card-sub">
-              <h3>Incoming jobs</h3>
-              <ul id="washer-job-list" class="lb-list"></ul>
-            </div>
+      <section id="map-pane" class="pane pane-right">
+        <div class="pane-header">
+          <h2>Map</h2>
+          <div class="map-controls">
+            <button id="btn-center-me" class="lb-secondary">Center me</button>
+            <select id="map-filter">
+              <option value="all">All</option>
+              <option value="available">Available</option>
+              <option value="busy">Busy</option>
+            </select>
           </div>
         </div>
-      </section>
-
-      <!-- MAP -->
-      <section class="lb-screen lb-hidden" id="screen-map">
-        <div class="lb-card">
-          <h1>Map & Live Tracking</h1>
-          <div id="map-canvas" style="height:520px;border-radius:16px;overflow:hidden;"></div>
-          <div class="lb-card-sub">
-            <label><span>Show POIs</span>
-              <select id="map-poi-select">
-                <option value="laundromat">Laundromats</option>
-                <option value="dollar_tree">Dollar Tree</option>
-                <option value="dollar_general">Dollar General</option>
-                <option value="all">All</option>
-              </select>
-            </label>
-            <button id="btn-map-refresh-pois" class="lb-secondary">Refresh POIs</button>
-            <button id="btn-map-back" class="lb-secondary">Back</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- MESSAGES -->
-      <section class="lb-screen lb-hidden" id="screen-messages">
-        <div class="lb-card">
-          <h1>Messages</h1>
-          <div class="lb-card-sub">
-            <label><span>Job channel</span>
-              <select id="messages-job-select"></select>
-            </label>
-            <div id="messages-list" style="height:300px;overflow:auto;padding:12px" class="lb-map-placeholder"></div>
-            <div class="lb-form" style="margin-top:8px">
-              <input id="messages-input" placeholder="Type a message..." />
-              <button id="btn-send-message" class="lb-primary">Send</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAYMENTS -->
-      <section class="lb-screen lb-hidden" id="screen-payments">
-        <div class="lb-card">
-          <h1>Payments</h1>
-          <p class="lb-muted">Client card tokenization should be done with NMI Collect.js (public token). The server holds private keys.</p>
-          <div class="lb-card-sub">
-            <h3>Test payment token (placeholder)</h3>
-            <p class="lb-muted">In production, use NMI Collect.js to create a token and send it to /api/payments/charge</p>
-            <label><span>Payment token (for testing)</span><input id="test-payment-token" /></label>
-            <label><span>Job ID to charge</span><input id="test-job-id" /></label>
-            <button id="btn-test-charge" class="lb-primary">Test charge (server)</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PROFILE -->
-      <section class="lb-screen lb-hidden" id="screen-profile">
-        <div class="lb-card">
-          <h1>Profile</h1>
-          <div class="lb-form">
-            <label><span>Name</span><input id="profile-name" type="text" /></label>
-            <label><span>Email</span><input id="profile-email" type="email" /></label>
-            <label><span>Role</span>
-              <select id="profile-role"><option value="client">Client</option><option value="washer">Washer</option></select>
-            </label>
-            <button id="btn-profile-save" class="lb-primary">Save profile</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- SETTINGS -->
-      <section class="lb-screen lb-hidden" id="screen-settings">
-        <div class="lb-card">
-          <h1>Settings</h1>
-          <div class="lb-card-sub">
-            <label><span>Server base URL</span><input id="settings-server-url" placeholder="http://localhost:4000" /></label>
-            <label><span>Google Maps API key (for demo only)</span><input id="settings-google-key" placeholder="YOUR_GOOGLE_MAPS_API_KEY" /></label>
-            <button id="btn-save-settings" class="lb-primary">Save settings</button>
-          </div>
-        </div>
+        <div id="map-canvas" class="map-canvas"></div>
       </section>
     </main>
 
-    <div id="toast-container"></div>
+    <!-- Floating bubble navigation -->
+    <nav id="bubble-nav" class="bubble-nav">
+      <button class="bubble-btn" data-nav="home" title="Home">🏠</button>
+      <button class="bubble-btn" data-nav="dashboard" title="Dashboard">📊</button>
+      <button class="bubble-btn" data-nav="map" title="Map">🗺️</button>
+      <button class="bubble-btn" data-nav="messages" title="Messages">💬</button>
+      <button class="bubble-btn" data-nav="payments" title="Payments">💳</button>
+      <button class="bubble-btn" data-nav="profile" title="Profile">👤</button>
+    </nav>
+
+    <!-- Modal container -->
+    <div id="modal-root" class="modal-root" aria-hidden="true"></div>
   </div>
 
-  <!-- Socket.IO client -->
-  <script src="/socket.io/socket.io.js"></script>
-
-  <!-- Google Maps JS: placeholder - will be loaded dynamically by app.js using the key from settings -->
-  <!-- NMI Collect.js: include per NMI docs on your payment page when ready -->
-
-  <script src="app.js"></script>
+  <!-- App logic -->
+  <script src="/app.js" defer></script>
 </body>
 </html>
