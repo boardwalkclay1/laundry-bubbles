@@ -1,6 +1,6 @@
 :root{
-  --primary:#7c4dff; /* purple */
-  --accent:#4fc3f7;  /* blue */
+  --primary:#7c4dff;
+  --accent:#4fc3f7;
   --bg:#f4f6fb;
   --card:#ffffff;
   --muted:#6b7280;
@@ -34,23 +34,19 @@ body{margin:0;background:var(--bg);color:#111;font-size:15px}
 
 .map-canvas{height:640px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#eaf6ff,#f6f0ff);border:1px solid rgba(79,195,247,0.12)}
 
-/* Floating bubble nav */
 .bubble-nav{position:fixed;right:18px;bottom:24px;display:flex;flex-direction:column;gap:10px;z-index:999}
 .bubble-btn{width:64px;height:64px;border-radius:50%;background:linear-gradient(180deg,var(--primary),#5a2bd6);color:#fff;border:0;box-shadow:0 12px 30px rgba(124,77,255,0.18);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
 .bubble-label{font-size:11px;pointer-events:none}
 .bubble-btn:hover{transform:translateY(-6px);transition:transform .18s}
 
-/* Modal */
 .modal-root{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .modal-root[aria-hidden="false"]{pointer-events:auto}
 .modal{background:rgba(0,0,0,0.35);position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
 .modal-body{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:720px;box-shadow:var(--shadow)}
 
-/* Washer hover card */
 .washer-hover{background:linear-gradient(90deg,#fff,#f8f6ff);padding:10px;border-radius:10px;box-shadow:var(--shadow);width:260px}
 .washer-services .service-line{font-size:13px;color:#222;margin-top:6px}
 
-/* Responsive */
 @media (max-width:900px){
   .lb-main{flex-direction:column;padding:12px}
   .pane-left{width:100%}
