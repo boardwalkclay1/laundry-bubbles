@@ -5,8 +5,6 @@
   <title>Laundry Bubbles</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="/styles.css" />
-  <!-- Google Maps JS: replace YOUR_BROWSER_KEY with your restricted browser key -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_BROWSER_KEY&libraries=places&callback=initMap"></script>
 </head>
 <body>
   <div id="app" class="app-root">
@@ -19,51 +17,64 @@
         <input id="search-input" placeholder="Search washers, services, addresses" />
       </div>
       <div class="lb-actions">
-        <button id="btn-notifications" class="icon-btn">🔔</button>
-        <button id="btn-profile" class="icon-btn">👤</button>
+        <button id="btn-profile" class="icon-btn">Profile</button>
       </div>
     </header>
 
     <main class="lb-main">
-      <section id="feed" class="pane pane-left">
+      <section id="home-pane" class="pane pane-left">
         <div class="pane-header">
-          <h2>Feed</h2>
-          <button id="btn-new-job" class="lb-primary">New Pickup</button>
+          <h2 id="welcome-title">Welcome</h2>
+          <div>
+            <button id="btn-become-washer" class="lb-secondary">Become a Washer</button>
+            <button id="btn-new-job" class="lb-primary">New Pickup</button>
+          </div>
         </div>
-        <div id="feed-list" class="feed-list"></div>
+
+        <div id="profile-card" class="profile-card">
+          <h3 id="profile-name">Neutral Profile</h3>
+          <p id="profile-role">Client</p>
+          <div class="profile-actions">
+            <button id="btn-edit-profile" class="lb-secondary">Edit Profile</button>
+            <button id="btn-legal" class="lb-secondary">Legal / Photo Policy</button>
+          </div>
+        </div>
+
+        <div class="pane-section">
+          <h4>Feed & Nearby Washers</h4>
+          <div id="feed-list" class="feed-list"></div>
+        </div>
       </section>
 
       <section id="map-pane" class="pane pane-right">
         <div class="pane-header">
           <h2>Map</h2>
           <div class="map-controls">
+            <label>Radius:
+              <input id="map-radius" type="range" min="1" max="50" value="10" />
+              <span id="map-radius-label">10 mi</span>
+            </label>
             <button id="btn-center-me" class="lb-secondary">Center me</button>
-            <select id="map-filter">
-              <option value="all">All</option>
-              <option value="available">Available</option>
-              <option value="busy">Busy</option>
-            </select>
           </div>
         </div>
         <div id="map-canvas" class="map-canvas"></div>
       </section>
     </main>
 
-    <!-- Floating bubble navigation -->
+    <!-- Floating bubble navigation with names -->
     <nav id="bubble-nav" class="bubble-nav">
-      <button class="bubble-btn" data-nav="home" title="Home">🏠</button>
-      <button class="bubble-btn" data-nav="dashboard" title="Dashboard">📊</button>
-      <button class="bubble-btn" data-nav="map" title="Map">🗺️</button>
-      <button class="bubble-btn" data-nav="messages" title="Messages">💬</button>
-      <button class="bubble-btn" data-nav="payments" title="Payments">💳</button>
-      <button class="bubble-btn" data-nav="profile" title="Profile">👤</button>
+      <button class="bubble-btn" data-nav="home"><span class="bubble-label">Home</span></button>
+      <button class="bubble-btn" data-nav="map"><span class="bubble-label">Map</span></button>
+      <button class="bubble-btn" data-nav="dashboard"><span class="bubble-label">Washer</span></button>
+      <button class="bubble-btn" data-nav="messages"><span class="bubble-label">Messages</span></button>
+      <button class="bubble-btn" data-nav="payments"><span class="bubble-label">Payments</span></button>
+      <button class="bubble-btn" data-nav="settings"><span class="bubble-label">Settings</span></button>
     </nav>
 
-    <!-- Modal container -->
+    <!-- Modal root -->
     <div id="modal-root" class="modal-root" aria-hidden="true"></div>
   </div>
 
-  <!-- App logic -->
   <script src="/app.js" defer></script>
 </body>
 </html>
