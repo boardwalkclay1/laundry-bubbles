@@ -1,52 +1,44 @@
 :root{
-  --lb-bg:#050716;--lb-card:#121733;--lb-accent-blue:#5ad1ff;--lb-accent-purple:#c287ff;--lb-accent-white:#fdfcff;--lb-muted:#a8a9c7;--lb-danger:#ff5c7a;--lb-radius-lg:18px;--lb-radius-md:12px;--lb-radius-pill:999px;--lb-shadow-soft:0 0 35px rgba(90,209,255,0.18);--lb-shadow-purple:0 0 30px rgba(194,135,255,0.18);--lb-font-main:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-*{box-sizing:border-box}
-body{margin:0;padding:0;font-family:var(--lb-font-main);background:radial-gradient(circle at top,#20245a 0,#050716 40%,#02010a 100%);color:var(--lb-accent-white);min-height:100vh}
-#app{max-width:1100px;margin:0 auto;padding:16px}
-.lb-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-radius:var(--lb-radius-pill);background:linear-gradient(135deg,rgba(10,13,40,0.95),rgba(14,19,52,0.95));box-shadow:var(--lb-shadow-soft);margin-bottom:22px;position:sticky;top:10px;z-index:10;backdrop-filter:blur(12px)}
-.lb-logo-bubble{display:inline-flex;flex-direction/* public/styles.css - Laundry Bubbles core styles */
-:root{
-  --primary:#1976d2;
-  --accent:#00bfa5;
-  --bg:#f6f8fb;
+  --primary:#7c4dff; /* purple */
+  --accent:#4fc3f7;  /* blue */
+  --bg:#f4f6fb;
   --card:#ffffff;
   --muted:#6b7280;
-  --shadow: 0 6px 18px rgba(20,20,40,0.08);
+  --shadow: 0 8px 24px rgba(20,20,40,0.08);
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
-
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:#111;font-size:15px}
-.lb-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(90deg,#fff,#f8fbff);border-bottom:1px solid #e6eef9}
+.lb-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(90deg,#fff,#f6f8ff);border-bottom:1px solid rgba(124,77,255,0.08)}
 .lb-logo-bubble{display:flex;flex-direction:column}
 .lb-logo-main{font-weight:700;color:var(--primary);font-size:18px}
 .lb-logo-sub{font-size:12px;color:var(--muted)}
 .lb-search{flex:1}
-.lb-search input{width:100%;padding:8px 12px;border-radius:10px;border:1px solid #e3eefc;background:#fff}
+.lb-search input{width:100%;padding:8px 12px;border-radius:10px;border:1px solid #e6eef9;background:#fff}
 .lb-actions{display:flex;gap:8px}
-.icon-btn{background:transparent;border:0;padding:6px;font-size:18px;cursor:pointer}
+.icon-btn{background:transparent;border:0;padding:6px;font-size:16px;cursor:pointer}
 
 .lb-main{display:flex;gap:16px;padding:16px;align-items:flex-start}
-.pane{background:transparent}
 .pane-left{flex:0 0 420px;max-width:420px}
 .pane-right{flex:1;min-width:320px}
 .pane-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.profile-card{background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow);margin-bottom:12px}
 .feed-list{display:flex;flex-direction:column;gap:12px}
 .feed-item,.washer-card{background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow)}
 .feed-item-head{display:flex;justify-content:space-between;align-items:center}
 .feed-item-body{margin-top:8px}
 .feed-item-actions{display:flex;gap:8px;margin-top:10px}
-.lb-primary{background:var(--primary);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
-.lb-secondary{background:#fff;border:1px solid #e6eef9;padding:8px 12px;border-radius:8px;cursor:pointer}
+.lb-primary{background:linear-gradient(180deg,var(--primary),#5a2bd6);color:#fff;border:0;padding:8px 12px;border-radius:10px;cursor:pointer}
+.lb-secondary{background:#fff;border:1px solid rgba(124,77,255,0.12);padding:8px 12px;border-radius:10px;cursor:pointer}
 .muted{color:var(--muted);font-size:13px}
 
-.map-canvas{height:640px;border-radius:12px;overflow:hidden;background:#e9f2ff;border:1px solid #e6eef9}
+.map-canvas{height:640px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#eaf6ff,#f6f0ff);border:1px solid rgba(79,195,247,0.12)}
 
 /* Floating bubble nav */
 .bubble-nav{position:fixed;right:18px;bottom:24px;display:flex;flex-direction:column;gap:10px;z-index:999}
-.bubble-btn{width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,var(--primary),#115293);color:#fff;border:0;box-shadow:0 8px 20px rgba(25,118,210,0.18);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.bubble-btn:hover{transform:translateY(-4px);transition:transform .18s}
+.bubble-btn{width:64px;height:64px;border-radius:50%;background:linear-gradient(180deg,var(--primary),#5a2bd6);color:#fff;border:0;box-shadow:0 12px 30px rgba(124,77,255,0.18);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
+.bubble-label{font-size:11px;pointer-events:none}
+.bubble-btn:hover{transform:translateY(-6px);transition:transform .18s}
 
 /* Modal */
 .modal-root{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
@@ -54,35 +46,14 @@ body{margin:0;background:var(--bg);color:#111;font-size:15px}
 .modal{background:rgba(0,0,0,0.35);position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
 .modal-body{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:720px;box-shadow:var(--shadow)}
 
+/* Washer hover card */
+.washer-hover{background:linear-gradient(90deg,#fff,#f8f6ff);padding:10px;border-radius:10px;box-shadow:var(--shadow);width:260px}
+.washer-services .service-line{font-size:13px;color:#222;margin-top:6px}
+
 /* Responsive */
 @media (max-width:900px){
   .lb-main{flex-direction:column;padding:12px}
   .pane-left{width:100%}
   .pane-right{width:100%}
   .map-canvas{height:420px}
-}:column;padding:8px 16px;border-radius:var(--lb-radius-pill);background:radial-gradient(circle at 10% 10%,rgba(90,209,255,0.9),rgba(12,8,36,0.95));box-shadow:var(--lb-shadow-purple)}
-.lb-logo-main{font-size:18px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase}
-.lb-logo-sub{font-size:12px;opacity:0.9;
-.lb-screen{animation:fadeIn .25s ease-out}
-.lb-hidden{display:none!important}
-.lb-card{background:linear-gradient(145deg,rgba(11,15,42,0.98),rgba(12,8,36,0.98));border-radius:var(--lb-radius-lg);padding:18px 20px;box-shadow:var(--lb-shadow-soft);border:1px solid rgba(90,209,255,0.08);position:relative;overflow:hidden}
-.lb-card-sub{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(168,169,199,0.12)}
-h1,h2,h3,h4{margin:4px 0 10px 0;font-weight:700}
-h1{font-size:20px;letter-spacing:.06em;text-transform:uppercase}
-.lb-tagline{color:var(--lb-muted);margin-bottom:12px}
-.lb-form{display:flex;flex-direction:column;gap:10px;margin-top:8px}
-.lb-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--lb-muted)}
-.lb-form input, .lb-form select, .lb-form textarea{border-radius:var(--lb-radius-md);border:1px solid rgba(90,209,255,0.06);background:rgba(5,8,28,0.95);color:var(--lb-accent-white);padding:10px 12px;font-size:14px;outline:none}
-.lb-form textarea{min-height:70px;resize:vertical}
-button{font-family:var(--lb-font-main)}
-.lb-primary, .lb-secondary, .lb-danger{border-radius:var(--lb-radius-pill);border:none;padding:10px 14px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
-.lb-primary{background:linear-gradient(135deg,var(--lb-accent-blue),var(--lb-accent-purple));color:#050716}
-.lb-secondary{background:rgba(90,209,255,0.08);color:var(--lb-accent-white);border:1px solid rgba(90,209,255,0.06)}
-.lb-danger{background:rgba(255,92,122,0.06);color:#ffd5dd;border:1px solid rgba(255,92,122,0.06)}
-.lb-map-placeholder{border-radius:12px;background:radial-gradient(circle at top,rgba(90,209,255,0.06),rgba(9,10,33,0.96));padding:12px;border:1px dashed rgba(90,209,255,0.06)}
-.lb-list{list-style:none;padding:0;margin:0}
-.lb-list-item{padding:10px;border-radius:10px;margin-bottom:8px;background:rgba(11,15,42,0.95);border:1px solid rgba(90,209,255,0.04);display:flex;justify-content:space-between;align-items:center;gap:10px}
-.lb-muted{color:var(--lb-muted);font-size:13px}
-.lb-job-total{margin-top:6px;font-size:13px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:720px){.lb-header{flex-direction:column;align-items:flex-start;gap:8px}.lb-nav{width:100%;justify-content:space-between}}
+}
