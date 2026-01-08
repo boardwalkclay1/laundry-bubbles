@@ -1,35 +1,43 @@
-// services/db.js
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const express = require('express');
 const path = require('path');
+require('dotenv').config();
 
-const adapter = new FileSync(path.join(__dirname, '..', 'data.json'));
-const db = low(adapter);
+const app = express();
 
-// defaults
-db.defaults({ washers: [], jobs: [], transactions: [] }).write();
+// -----------------------------
+// CONFIG
+// -----------------------------
+const PORT = process.env.PORT || 3000;
 
-module.exports = {
-  async getWashers() { return db.get('washers').value(); },
-  async saveWasher(w) {
-    if (!w.id) w.id = 'washer_' + Date.now();
-    db.get('washers').remove({ id: w.id }).write();
-    db.get('washers').push(w).write();
-    return w;
-  },
-  async getJobs() { return db.get('jobs').value(); },
-  async saveJob(j) {
-    if (!j.id) j.id = 'job_' + Date.now();
-    db.get('jobs').push(j).write();
-    return j;
-  },
-  async getJob(id) { return db.get('jobs').find({ id }).value(); },
-  async saveTransaction(t) {
-    if (!t.id) t.id = 'txn_' + Date.now();
-    db.get('transactions').push(t).write();
-    return t;
-  },
-  async findTransactionByIdempotency(key) {
-    return db.get('transactions').find({ idempotencyKey: key }).value();
-  }
-};
+// -----------------------------
+// MIDDLEWARE
+// -----------------------------
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the renamed folder "public.html"
+app.use(express.static(path.join(__dirname, 'public.html')));
+
+// -----------------------------
+// API: PUBLIC CONFIG (SAFE)
+// -----------------------------
+app.get('/api/config', (req, res) => {
+  res.json({
+    googleMapsBrowserKey: process.env.GOOGLE_MAPS_BROWSER_KEY || null,
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// -----------------------------
+// SPA FALLBACK → public.html/index.html
+// -----------------------------
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public.html', 'index.html'));
+});
+
+// -----------------------------
+// START SERVER
+// -----------------------------
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Laundry Bubbles server running on port ${PORT}`);
+});
