@@ -8,6 +8,18 @@
 </head>
 <body>
   <div id="app" class="app-root">
+
+    <!-- 24-HOUR UNLOCK GATE -->
+    <div id="paywall-overlay" class="lb-paywall-overlay" aria-hidden="true">
+      <div class="lb-paywall-card">
+        <h2>Laundry Bubbles Access</h2>
+        <p>Unlock full access to Laundry Bubbles for 24 hours.</p>
+        <p id="paywall-status" class="lb-paywall-status"></p>
+        <button id="btn-pay-unlock" class="lb-primary">Unlock for $1</button>
+        <button id="btn-pay-restore" class="lb-secondary">I already paid</button>
+      </div>
+    </div>
+
     <header class="lb-header">
       <div class="lb-logo-bubble">
         <span class="lb-logo-main">Laundry</span>
@@ -73,9 +85,7 @@
     <div id="modal-root" class="modal-root" aria-hidden="true"></div>
   </div>
 
-  <!-- Load NMI Collect.js from NMI official URL in your deployment (client only) -->
-  <script src="https://secure.networkmerchants.com/collect/collect.js"></script>
-
-  <script src="/app.js" defer></script>
+  <!-- No NMI / collect.js. Payment handled via PayPal link + app.js -->
+  <script src="app.js" defer></script>
 </body>
 </html>
